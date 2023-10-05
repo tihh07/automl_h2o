@@ -1,0 +1,54 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Carregando o pacote h2o
+
+```{r results='hide'}
+#install.packages("h2o")
+library(h2o)
+```
+
+Inicializando a instância H2O e carregando o conjunto de dados
+
+```{r results='hide'}
+h2o.init(port = 8080)
+data(iris)
+```
+
+Convertendo o conjunto de dados para um objeto h2o
+
+```{r results='hide'}
+iris_h2o <- as.h2o(iris)
+```
+
+Definindo a coluna de destino e as colunas de entrada
+
+```{r results='hide'}
+y <- "Species"
+x <- setdiff(names(iris), y)
+```
+
+Treinando o modelo AutoML com 5 possibilidades
+
+```{r results='hide'}
+aml <- h2o.automl(x = x, y = y, 
+                  training_frame = iris_h2o, 
+                  max_models = 4, 
+                  seed = 1,
+                  nfolds = 3)
+```
+
+Visualizando o modelo líder com melhor performance
+
+```{r}
+lb <- aml@leaderboard
+print(lb, n = nrow(lb))  # Print all rows instead of default (6 rows)
+
+```
